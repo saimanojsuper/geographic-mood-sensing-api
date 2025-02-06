@@ -1,3 +1,7 @@
+-- For distance calculations
+CREATE ALIAS IF NOT EXISTS H2GIS_SPATIAL FOR "org.h2gis.functions.factory.H2GISFunctions.load";
+CALL H2GIS_SPATIAL();
+
 ---- Insert Users
 INSERT INTO user_data (user_name, api_key) VALUES
 ('john_doe', 'abc12345'),
@@ -20,4 +24,4 @@ INSERT INTO mood_data (user_id, lat, long, mood, time_stamp, image) VALUES
 (5, '35.6895', '139.6917', 'surprised', '2025-02-05', 'https://s3.amazonaws.com/images/david_mood1.jpg'),
 (5, '35.6896', '139.6918', 'content', '2025-02-06', 'https://s3.amazonaws.com/images/david_mood2.jpg');
 
-CREATE TABLE bedrock_kb_no_chunking (id uuid PRIMARY KEY, chunks text, metadata json);
+--create indexes required
