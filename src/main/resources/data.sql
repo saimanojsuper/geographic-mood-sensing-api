@@ -11,17 +11,22 @@ INSERT INTO user_data (user_name, api_key) VALUES
 ('david_brown', 'key987654');
 --
 --
----- Insert MoodData
-INSERT INTO mood_data (user_id, lat, long, mood, time_stamp, image) VALUES
-(1, '40.7128', '-74.0060', 'happy', '2025-02-05', 'https://s3.amazonaws.com/images/john_mood1.jpg'),
-(1, '40.7129', '-74.0059', 'sad', '2025-02-06', 'https://s3.amazonaws.com/images/john_mood2.jpg'),
-(2, '34.0522', '-118.2437', 'excited', '2025-02-05', 'https://s3.amazonaws.com/images/jane_mood1.jpg'),
-(2, '34.0523', '-118.2436', 'relaxed', '2025-02-06', 'https://s3.amazonaws.com/images/jane_mood2.jpg'),
-(3, '51.5074', '-0.1278', 'angry', '2025-02-05', 'https://s3.amazonaws.com/images/sam_mood1.jpg'),
-(3, '51.5075', '-0.1279', 'anxious', '2025-02-06', 'https://s3.amazonaws.com/images/sam_mood2.jpg'),
-(4, '48.8566', '2.3522', 'joyful', '2025-02-05', 'https://s3.amazonaws.com/images/maria_mood1.jpg'),
-(4, '48.8567', '2.3523', 'neutral', '2025-02-06', 'https://s3.amazonaws.com/images/maria_mood2.jpg'),
-(5, '35.6895', '139.6917', 'surprised', '2025-02-05', 'https://s3.amazonaws.com/images/david_mood1.jpg'),
-(5, '35.6896', '139.6918', 'content', '2025-02-06', 'https://s3.amazonaws.com/images/david_mood2.jpg');
+-- Insert data with latitude and longitude as separate columns
+INSERT INTO mood_data (user_id, latitude, longitude, mood, time_stamp)
+VALUES
+(1, 40.712776, -74.005974, 'happy', '2025-02-06 10:00:00'),  -- New York, User 1
+(1, 34.052235, -118.243683, 'sad', '2025-02-06 10:15:00'),    -- Los Angeles, User 2
+(2, 51.507351, -0.127758, 'neutral', '2025-02-06 10:30:00'), -- London, User 3
+(2, 48.856613, 2.352222, 'happy', '2025-02-06 10:45:00'),    -- Paris, User 4
+(3, 40.730610, -73.935242, 'sad', '2025-02-06 11:00:00'),    -- New York, User 5
+(3, 34.052235, -118.243683, 'neutral', '2025-02-06 11:15:00'), -- Los Angeles, User 6
+(4, 41.902782, 12.496366, 'happy', '2025-02-06 11:30:00'),    -- Rome, User 7
+(4, 52.367573, 4.904138, 'sad', '2025-02-06 11:45:00'),      -- Amsterdam, User 8
+(5, 40.712776, -74.005974, 'neutral', '2025-02-06 12:00:00'), -- New York, User 9
+(5, 34.052235, -118.243683, 'happy', '2025-02-06 12:15:00');  -- Los Angeles, User 10
+
 
 --create indexes required
+--CREATE SPATIAL INDEX hotel_location_idx ON mood_data(location); (h2 doesn't support can be used on other dbs like psql)
+--Above index improves the performance of the application
+

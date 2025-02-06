@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.moodsensor.stem.entity.UserData;
 
-public interface UserDataRepository extends JpaRepository<UserData,Integer> {
-  Optional<UserData> findById(Integer id);
+public interface UserDataRepository extends JpaRepository<UserData,Long> {
+  Optional<UserData> findById(Long id);
   Optional<UserData> findByUserName(String userName);
 }

@@ -38,20 +38,16 @@ public class UserDataRepositoryTest {
   @Test
   public void testFindUserDataById() {
 
-    // when
-    Optional<UserData> found = userRepository.findById(2);
+    Optional<UserData> found = userRepository.findById(2L);
 
-    // then
     Assertions.assertTrue(found.isPresent());
   }
 
   @Test
   public void testFindUserDataByName() {
 
-    // when
     Optional<UserData> found = userRepository.findByUserName(USER_ONE);
 
-    // then
     Assertions.assertTrue(found.isPresent());
     Assertions.assertEquals(found.get().getUserName(), USER_ONE);
   }
