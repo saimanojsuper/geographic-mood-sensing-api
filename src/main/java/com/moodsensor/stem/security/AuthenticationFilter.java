@@ -28,6 +28,11 @@ public class AuthenticationFilter extends GenericFilterBean {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
       throws IOException, ServletException {
     try {
+      String path = ((HttpServletRequest) request).getRequestURI();
+      if (path.startsWith("/swagger-ui") || path.startsWith("/v3/api-docs") || path.startsWith("/swagger-resources")) {
+        filterChain.doFilter(request, response); // Skip authentication for Swagger
+        return;
+      }
       Authentication authentication = AuthenticationService.getAuthentication((HttpServletRequest)request,
           moodDataService);
       SecurityContextHolder.getContext().setAuthentication(authentication);

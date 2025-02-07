@@ -1,6 +1,6 @@
 # Mood sensing app
-It is web application that provides the apis to save users mood based on the location. It also provides
-the closest location of user based on mood (Change this correctly)
+It is web application that provides the apis to save users mood based on the location & provides
+the services like nearest location based on user mood, user mood frequency distribution
 
 ## Features
 
@@ -19,10 +19,10 @@ the closest location of user based on mood (Change this correctly)
 ![alt text](assests/mood-sensing-app.jpg)
 
 ### Assumptions
-- H2db is used assuming for quick setup. (since data is stored in memory it can take max 30 of container memory)
-- Assuming the user current location is sent in the coordinates (for uploading mood & getting the nearest happy location)
+- H2db is used for quick setup. (since data is stored in memory it can take max 30% of container memory)
+- Assuming the user current location is sent in the coordinates (for uploading new mood & getting the nearest happy location)
 - Spring security with role based authentication is implemented using api key (no user creation service. 
-created some default users for testing purpose)
+created some default users for testing purpose, need to provide RBAC)
 
 ## Design Changes for scaling requirements
 ![scaling design](assests/mood-sensing-future.jpg)
@@ -32,20 +32,21 @@ created some default users for testing purpose)
 
 - DB: 1user = 0.1kb => 10k users = 1mb
 100k userMood = 0.5kb => 50mb/day
-One year:  50*365 = 17Gb (approx). 
-- According to scaling requirements since data is not from critical domain we can use
+One year:  50*365 = 17Gb (approx) 
+- According to scaling requirements since data is not from critical domain like financial we can use
 mongodb which more scalable. Using GeoJSON, 2dsphere Index : the distance computations 
 can be done faster as well
 - To improve performance we can use Redis for Get `api/mood/frequency/:userId` & `api/mood/happy-location/:userId` can be cached
 using expiry for cache & also based on the current location
-- sso can be used with google or any other social media apps which can provide us with the
+- SSO can be used with google or any other social media apps which can provide us with the
 current location data of user
 - Load balancer should be used for autoscaling based on the traffic for spring application
 - App can ge sub divided to be more performant one specific to write operations and other
-to read operations. So that they can be independently scalable, new features
+to read operations. 
+- So that they can be independently scalable, new features
 can be added like uploading image to the upload which will use NNN model to detect 
-the mood & save the image in blob storage for writer app and getting the nearest 20 locations of different
-moods for the reader application. 
+the mood, save the image in blob storage for writer app and getting the nearest 20 locations of different
+moods or visual graph of user frequency distribution over map for the reader application. 
 
 
 ## Installation & Setup
@@ -71,8 +72,11 @@ moods for the reader application.
    The backend will be available at `http://127.0.0.1:8080`
 
 ## API Endpoints 
-#### Swagger is enabled you, can get detailed information over there
+#### Swagger is enabled you, can get additional information over there, if you run app in local
 
+### Authentication (API key based)
+- For testing purpose following credentials can be used in header:
+``` X-API-KEY: abc12345, CLIENT_NAME: john_doe ```
 ### Upload a new Mood for the user
 #### Endpoint: `POST /api/mood/upload`
 ##### Payload:

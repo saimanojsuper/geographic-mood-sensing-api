@@ -26,8 +26,11 @@ public class SecurityConfig {
 
     http.csrf(AbstractHttpConfigurer::disable)
         .authorizeHttpRequests(
-            authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry.requestMatchers(
-                "/**").authenticated())
+            authorizationManagerRequestMatcherRegistry ->
+                authorizationManagerRequestMatcherRegistry
+//                    .requestMatchers("/api/mood/**").authenticated()
+                .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/swagger-resources").permitAll()
+                .anyRequest().authenticated())
         .httpBasic(Customizer.withDefaults())
         .sessionManagement(
             httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(
