@@ -162,3 +162,7 @@ Check out the demo video: [Demo.mp4](./Demo.mp4) (need to be done)
 Developed by **Sai Manoj**
 
 ---
+
+for detecting emotion: https://amirmustafaofficial.medium.com/azure-face-api-advance-face-detection-5959794c26c0
+
+indexes for optimizing the distance calculation

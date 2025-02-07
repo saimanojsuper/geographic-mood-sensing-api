@@ -29,20 +29,20 @@ public class MoodSensorAppController {
 
   @Autowired private MoodDataService moodService;
 
-  @PostMapping("/upload")
+  @PostMapping("upload")
   public ResponseEntity<String> uploadMood(@RequestBody @Valid MoodRequest moodRequest) {
     moodService.uploadMood(moodRequest.getUserId(), moodRequest.getMood(), moodRequest.getLatitude(),
         moodRequest.getLongitude());
     return ResponseEntity.ok("Mood uploaded successfully.");
   }
 
-  @GetMapping("/frequency/{userId}")
+  @GetMapping("frequency/{userId}")
   public ResponseEntity<Map<String,Long>> getMoodFrequency(@PathVariable Long userId) {
     Map<String,Long> moodCount = moodService.getMoodFrequency(userId);
     return ResponseEntity.ok(moodCount);
   }
 
-  @GetMapping("/happy-location/{userId}")
+  @GetMapping("happy-location/{userId}")
   //Need to check the distance unit
   public ResponseEntity<NearestMoodData> getClosestHappyLocation(
       @PathVariable Long userId, @RequestParam double latitude, @RequestParam double longitude) {

@@ -6,12 +6,12 @@ import java.util.List;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 
-public class StringValidator implements ConstraintValidator<ValidateString,String> {
+public class StringValidator implements ConstraintValidator<ValidateMoodString,String> {
 
   private List<String> valueList;
 
   @Override
-  public void initialize(ValidateString constraintAnnotation) {
+  public void initialize(ValidateMoodString constraintAnnotation) {
     valueList = new ArrayList<String>();
     for (String val : constraintAnnotation.acceptedValues()) {
       valueList.add(val.toUpperCase());

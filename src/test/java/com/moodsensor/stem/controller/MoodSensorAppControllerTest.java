@@ -1,7 +1,12 @@
 package com.moodsensor.stem.controller;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import java.util.Map;
+
+import org.json.JSONObject;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -14,8 +19,14 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import com.moodsensor.stem.Enum.MoodState;
+import com.moodsensor.stem.exception.DataServicesException;
+import com.moodsensor.stem.exception.InvalidUserException;
 import com.moodsensor.stem.service.MoodDataService;
+
+import jakarta.servlet.ServletException;
 
 public class MoodSensorAppControllerTest {
 
@@ -40,11 +51,8 @@ public class MoodSensorAppControllerTest {
     Mockito.doNothing().when(moodDataService).uploadMood(12345L, "happy", 40.712776, -74.005974);
 
     MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/mood/upload")
-            .contentType(MediaType.APPLICATION_JSON)
-            .content(jsonPayload))
-        .andExpect(status().isOk())
-//        .andExpect(content().contentType(MediaType.TEXT_PLAIN))
-        .andReturn();
+        .contentType(MediaType.APPLICATION_JSON)
+        .content(jsonPayload)).andExpect(status().isOk()).andReturn();
 
     String expected = "Mood uploaded successfully.";
     String actual = result.getResponse().getContentAsString();
@@ -60,42 +68,90 @@ public class MoodSensorAppControllerTest {
 
     Mockito.doNothing().when(moodDataService).uploadMood(12345L, "happy", 40.712776, -74.005974);
 
-    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/mood/upload")
+    mockMvc.perform(MockMvcRequestBuilders.post("/mood/upload")
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonPayload))
-        .andExpect(status().isOk())
-        //        .andExpect(content().contentType(MediaType.TEXT_PLAIN))
+        .andExpect(status().is4xxClientError())
+        .andExpect(response -> assertTrue(
+            response.getResolvedException() instanceof MethodArgumentNotValidException))
         .andReturn();
 
-    String expected = "Mood uploaded successfully.";
-    String actual = result.getResponse().getContentAsString();
-    Assertions.assertEquals(expected, actual);
-    //Assert the data invalid execption
   }
 
-  public void testuploadMoodInvalidUser() {
+  @Test
+  public void testuploadMoodInvalidUser() throws Exception {
 
-    //Assert the invalid user exception
+    String jsonPayload =
+        "{\n" + "  \"userId\": 12345,\n" + "  \"mood\": \"happy\",\n" + "  \"latitude\": 40.712776, \n" +
+            "  \"longitude\": -74.005974\n" + "}\n";
+
+    Mockito.doThrow(new InvalidUserException("invalid user"))
+        .when(moodDataService)
+        .uploadMood(12345L, "happy", 40.712776, -74.005974);
+
+    Assertions.assertThrows(ServletException.class, () -> mockMvc.perform(
+            MockMvcRequestBuilders.post("/mood/upload")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(jsonPayload))
+        .andExpect(status().is4xxClientError())
+        .andExpect(response -> assertTrue(response.getResolvedException() instanceof InvalidUserException))
+        .andReturn());
+
   }
 
-  public void testGetMoodFrequency() {
+  @Test
+  public void testGetMoodFrequency() throws Exception {
 
-    //Assert various moods
+    when(moodDataService.getMoodFrequency(1L)).thenReturn(Map.of(MoodState.HAPPY.getName(), 1l));
+
+    MvcResult result = mockMvc.perform(
+            MockMvcRequestBuilders.get("/mood/frequency/1").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().isOk())
+        .andReturn();
+
+    JSONObject jsonObject = new JSONObject(result.getResponse().getContentAsString());
+    Assertions.assertEquals(1, jsonObject.get(MoodState.HAPPY.getName()));
   }
 
-  public void testGetMoodFrequencyThrowDataServicesException() {
+  @Test
+  public void testGetMoodFrequencyThrowDataServicesException() throws Exception {
 
-    //Assert exception
+    when(moodDataService.getMoodFrequency(1L)).thenThrow(DataServicesException.class);
+
+    Assertions.assertThrows(ServletException.class, () -> mockMvc.perform(
+            MockMvcRequestBuilders.get("/mood/frequency/1").contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is4xxClientError())
+        .andExpect(response -> assertTrue(response.getResolvedException() instanceof DataServicesException))
+        .andReturn());
+
   }
 
-  public void testGetClosestHappyLocation() {
+//  @Test
+//  public void testGetClosestHappyLocation() throws Exception {
+//
+//    when(moodDataService.getClosestHappyLocation(1L, 0.0, 0.0)).thenReturn(new NearestMoodData());
+//
+//    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/mood/happy-location/1")
+//        .requestAttr("latitude", 0.0)
+//        .requestAttr("longitude", 0.0)
+//        ).andExpect(status().isOk()).andReturn();
+//
+//    Assertions.assertNotNull(result.getResponse());
+//  }
 
-    //Assert data
-  }
+  @Test
+  public void testGetClosestHappyLocationThrowDataServicesException() throws Exception {
 
-  public void testGetClosestHappyLocationThrowDataServicesException() {
+    when(moodDataService.getClosestHappyLocation(1L, 0.0, 0.0)).thenThrow(DataServicesException.class);
 
-    //Assert exception
+    mockMvc.perform(MockMvcRequestBuilders.get("/mood/happy-location/1")
+            .requestAttr("latitude", 0.0)
+            .requestAttr("longitude", 0.0)
+            .contentType(MediaType.APPLICATION_JSON))
+        .andExpect(status().is4xxClientError())
+        .andExpect(response -> assertTrue(response.getResolvedException() instanceof ServletException))
+        .andReturn();
+
   }
 
 }
