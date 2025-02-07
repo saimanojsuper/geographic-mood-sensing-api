@@ -50,7 +50,7 @@ public class MoodSensorAppControllerTest {
 
     Mockito.doNothing().when(moodDataService).uploadMood(12345L, "happy", 40.712776, -74.005974);
 
-    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/mood/upload")
+    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.post("/api/mood/upload")
         .contentType(MediaType.APPLICATION_JSON)
         .content(jsonPayload)).andExpect(status().isOk()).andReturn();
 
@@ -68,7 +68,7 @@ public class MoodSensorAppControllerTest {
 
     Mockito.doNothing().when(moodDataService).uploadMood(12345L, "happy", 40.712776, -74.005974);
 
-    mockMvc.perform(MockMvcRequestBuilders.post("/mood/upload")
+    mockMvc.perform(MockMvcRequestBuilders.post("/api/mood/upload")
             .contentType(MediaType.APPLICATION_JSON)
             .content(jsonPayload))
         .andExpect(status().is4xxClientError())
@@ -90,7 +90,7 @@ public class MoodSensorAppControllerTest {
         .uploadMood(12345L, "happy", 40.712776, -74.005974);
 
     Assertions.assertThrows(ServletException.class, () -> mockMvc.perform(
-            MockMvcRequestBuilders.post("/mood/upload")
+            MockMvcRequestBuilders.post("/api/mood/upload")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(jsonPayload))
         .andExpect(status().is4xxClientError())
@@ -105,7 +105,7 @@ public class MoodSensorAppControllerTest {
     when(moodDataService.getMoodFrequency(1L)).thenReturn(Map.of(MoodState.HAPPY.getName(), 1l));
 
     MvcResult result = mockMvc.perform(
-            MockMvcRequestBuilders.get("/mood/frequency/1").contentType(MediaType.APPLICATION_JSON))
+            MockMvcRequestBuilders.get("/api/mood/frequency/1").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().isOk())
         .andReturn();
 
@@ -119,7 +119,7 @@ public class MoodSensorAppControllerTest {
     when(moodDataService.getMoodFrequency(1L)).thenThrow(DataServicesException.class);
 
     Assertions.assertThrows(ServletException.class, () -> mockMvc.perform(
-            MockMvcRequestBuilders.get("/mood/frequency/1").contentType(MediaType.APPLICATION_JSON))
+            MockMvcRequestBuilders.get("/api/mood/frequency/1").contentType(MediaType.APPLICATION_JSON))
         .andExpect(status().is4xxClientError())
         .andExpect(response -> assertTrue(response.getResolvedException() instanceof DataServicesException))
         .andReturn());
@@ -131,7 +131,7 @@ public class MoodSensorAppControllerTest {
 //
 //    when(moodDataService.getClosestHappyLocation(1L, 0.0, 0.0)).thenReturn(new NearestMoodData());
 //
-//    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/mood/happy-location/1")
+//    MvcResult result = mockMvc.perform(MockMvcRequestBuilders.get("/api/mood/happy-location/1")
 //        .requestAttr("latitude", 0.0)
 //        .requestAttr("longitude", 0.0)
 //        ).andExpect(status().isOk()).andReturn();
@@ -144,7 +144,7 @@ public class MoodSensorAppControllerTest {
 
     when(moodDataService.getClosestHappyLocation(1L, 0.0, 0.0)).thenThrow(DataServicesException.class);
 
-    mockMvc.perform(MockMvcRequestBuilders.get("/mood/happy-location/1")
+    mockMvc.perform(MockMvcRequestBuilders.get("/api/mood/happy-location/1")
             .requestAttr("latitude", 0.0)
             .requestAttr("longitude", 0.0)
             .contentType(MediaType.APPLICATION_JSON))

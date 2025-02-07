@@ -19,7 +19,7 @@ import com.moodsensor.stem.service.MoodDataService;
 import jakarta.validation.Valid;
 
 @RestController
-@RequestMapping("/mood/")
+@RequestMapping("/api/mood/")
 public class MoodSensorAppController {
 
   @GetMapping(value = "hello")

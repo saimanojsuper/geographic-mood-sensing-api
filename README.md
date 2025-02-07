@@ -37,112 +37,54 @@ the closest location of user based on mood (Change this correctly)
 
 ## API Endpoints
 
-### Upload an Excel File
-#### Endpoint: `POST /api/document/upload`
+### Upload a new Mood for the user
+#### Endpoint: `POST /api/mood/upload`
 ##### Payload:
 ```json
-{    
-  "file": "<Excel file>" // in form data
+{
+   "mood": "happy", <string> - can be happy, sad or neutral
+   "userId": 20 , <long> - must be a valid userId
+   "latitude": 22.4, <double>
+   "longitude": 23.3 <double>
 }
 ```
 ##### Response:
-```json
-{
-  "message": "File uploaded successfully",
-  "document_id": "<document_id>",
-  "data": [<processed data>],
-  "columns": [<column names>]
-}
+```
+Mood uploaded successfully.
 ```
 
-### Perform an Operation on a Document
-#### Endpoint: `POST /api/document/<document_id>/operations`
-##### Payload Examples:
-
-**Add Column**
-```json
-{
-  "type": "addColumn",
-  "params": {
-      "columnName1": "Price",
-      "columnName2": "Tax",
-      "newColumnName": "Total"
-  }
-}
-```
-
-**Filter Rows**
-```json
-{
-  "type": "filterRows",
-  "params": {
-      "condition": "Price > 70000"
-  }
-}
-```
-
-**Combine Columns**
-```json
-{
-  "type": "combineColumns",
-  "params": {
-      "columnName1": "Price",
-      "columnName2": "Tax",
-      "separator": " % ",
-      "newColumnName": "Price % Tax"
-  }
-}
-```
-
-**Undo Operation**
-```json
-{
-  "type": "undo",
-  "params": {}
-}
-```
+### Get the frequency distribution of the user
+#### Endpoint: `Get /api/mood/frequency/<userId>`
 
 ##### Response:
 ```json
 {
-  "message": "Operation completed successfully",
-  "version": <new_version>,
-  "data": [<updated data>],
-  "columns": [<updated columns>]
+  "angry": <count of the angry mood for user>,
+  "sad": <count of the sad mood for user>,
+  "neutral": <count of the neutral mood for user>
 }
 ```
 
-### Retrieve the Latest Document Version
-#### Endpoint: `GET /api/document/<document_id>/latest`
+### Get the closest happy location of the user
+#### Endpoint: `Get /api/mood/happy-location/<userId>`
+#### Request params: `latitude` - current location latitude point of user, `longitude` - current location longitude point of user
+
 ##### Response:
 ```json
 {
-  "document_id": "<document_id>",
-  "version": <latest_version>,
-  "data": [<latest data>],
-  "columns": [<latest columns>]
+  "latitude": <latitue of the location>,
+  "longitude": <longitude of the location>,
+  "distance": <distance from current location>
 }
 ```
 
-### Retrieve a Specific Document Version
-#### Endpoint: `GET /api/document/<document_id>/versions/<int:version>`
-##### Response:
-```json
-{
-  "document_id": "<document_id>",
-  "version": <requested_version>,
-  "data": [<versioned data>],
-  "columns": [<versioned columns>]
-}
-```
 
-| Method | Endpoint                                             | Description                          |
-| ------ | ---------------------------------------------------- | ------------------------------------ |
-| POST   | `/api/document/upload`                               | Upload an Excel file                 |
-| POST   | `/api/document/<document_id>/operations`             | Perform an operation on a document   |
-| GET    | `/api/document/<document_id>/latest`                 | Retrieve the latest document version |
-| GET    | `/api/document/<document_id>/versions/<int:version>` | Retrieve a specific document version |
 
+| Method | Endpoint                                        | Description                          |
+|--------| ----------------------------------------------- | ------------------------------------ |
+| POST   | `/api/mood/upload`                          | Upload a new Mood for the user            |
+| GET    | `/api/mood/frequency/<userId>`            | Get the frequency distribution of the user  |
+| GET    | `/api/mood/happy-location/<userId>`             | Get the closest happy location of the user |
 
 ## Running Tests
 
@@ -153,9 +95,10 @@ To run tests, run the following command in backend-server folder
 ```
 
 
-## Demo
+[//]: # (## Demo)
 
-Check out the demo video: [Demo.mp4](./Demo.mp4) (need to be done)
+[//]: # ()
+[//]: # (Check out the demo video: [Demo.mp4]&#40;./Demo.mp4&#41; &#40;need to be done&#41;)
 
 ## Author
 
@@ -163,6 +106,6 @@ Developed by **Sai Manoj**
 
 ---
 
-for detecting emotion: https://amirmustafaofficial.medium.com/azure-face-api-advance-face-detection-5959794c26c0
+for detecting emotion using the user location: https://amirmustafaofficial.medium.com/azure-face-api-advance-face-detection-5959794c26c0
 
 indexes for optimizing the distance calculation
