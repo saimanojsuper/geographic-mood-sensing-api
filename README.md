@@ -13,6 +13,41 @@ the closest location of user based on mood (Change this correctly)
 - **Backend**: Java, Spring Boot
 - **Storage**: H2 db (In memory)
 
+
+## Current Design
+
+![alt text](assests/mood-sensing-app.jpg)
+
+### Assumptions
+- H2db is used assuming for quick setup. (since data is stored in memory it can take max 30 of container memory)
+- Assuming the user current location is sent in the coordinates (for uploading mood & getting the nearest happy location)
+- Spring security with role based authentication is implemented using api key (no user creation service. 
+created some default users for testing purpose)
+
+## Design Changes for scaling requirements
+![scaling design](assests/mood-sensing-future.jpg)
+
+### Scaling Assumptions
+- To start with assume: 10k users using the api, In one day we assume to capture 10 locations = 100 * 10 = 100k requests / per data
+
+- DB: 1user = 0.1kb => 10k users = 1mb
+100k userMood = 0.5kb => 50mb/day
+One year:  50*365 = 17Gb (approx). 
+- According to scaling requirements since data is not from critical domain we can use
+mongodb which more scalable. Using GeoJSON, 2dsphere Index : the distance computations 
+can be done faster as well
+- To improve performance we can use Redis for Get `api/mood/frequency/:userId` & `api/mood/happy-location/:userId` can be cached
+using expiry for cache & also based on the current location
+- sso can be used with google or any other social media apps which can provide us with the
+current location data of user
+- Load balancer should be used for autoscaling based on the traffic for spring application
+- App can ge sub divided to be more performant one specific to write operations and other
+to read operations. So that they can be independently scalable, new features
+can be added like uploading image to the upload which will use NNN model to detect 
+the mood & save the image in blob storage for writer app and getting the nearest 20 locations of different
+moods for the reader application. 
+
+
 ## Installation & Setup
 
 ### Backend (Java Spring Boot)
@@ -75,7 +110,7 @@ Mood uploaded successfully.
 {
   "latitude": <latitue of the location>,
   "longitude": <longitude of the location>,
-  "distance": <distance from current location>
+  "distance": <distance from current location in spatial degrees will convert in kms future>
 }
 ```
 
@@ -89,7 +124,7 @@ Mood uploaded successfully.
 
 ## Running Tests
 
-To run tests, run the following command in backend-server folder
+To run tests, run the following command inside root folder
 
 ```bash
   ./gradlew test
@@ -107,6 +142,4 @@ Developed by **Sai Manoj**
 
 ---
 
-for detecting emotion using the user location: https://amirmustafaofficial.medium.com/azure-face-api-advance-face-detection-5959794c26c0
 
-indexes for optimizing the distance calculation

@@ -19,16 +19,22 @@ public class SecurityConfig {
 
   @Autowired MoodDataService moodDataService;
 
-    @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-      http.csrf(AbstractHttpConfigurer::disable)
-          .authorizeHttpRequests(authorizationManagerRequestMatcherRegistry ->
-              authorizationManagerRequestMatcherRegistry.requestMatchers("/**").authenticated())
-          .httpBasic(Customizer.withDefaults())
-          .sessionManagement(httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(
-              SessionCreationPolicy.STATELESS))
-          .addFilterBefore(new AuthenticationFilter(moodDataService), UsernamePasswordAuthenticationFilter.class);
-        return http.build();
-    }
+  @Bean
+  public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
+    // using this to authorize based on the userId
+    // WebExpressionAuthorizationManager authorization = new WebExpressionAuthorizationManager("@webSecurity.checkUserId(authentication,#userId)");
+
+    http.csrf(AbstractHttpConfigurer::disable)
+        .authorizeHttpRequests(
+            authorizationManagerRequestMatcherRegistry -> authorizationManagerRequestMatcherRegistry.requestMatchers(
+                "/**").authenticated())
+        .httpBasic(Customizer.withDefaults())
+        .sessionManagement(
+            httpSecuritySessionManagementConfigurer -> httpSecuritySessionManagementConfigurer.sessionCreationPolicy(
+                SessionCreationPolicy.STATELESS))
+        .addFilterBefore(new AuthenticationFilter(moodDataService),
+            UsernamePasswordAuthenticationFilter.class);
+    return http.build();
+  }
 
 }
