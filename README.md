@@ -35,7 +35,8 @@ the closest location of user based on mood (Change this correctly)
    ```
    The backend will be available at `http://127.0.0.1:8080`
 
-## API Endpoints
+## API Endpoints 
+#### Swagger is enabled you, can get detailed information over there
 
 ### Upload a new Mood for the user
 #### Endpoint: `POST /api/mood/upload`

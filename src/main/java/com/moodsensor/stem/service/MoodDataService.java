@@ -10,4 +10,6 @@ public interface MoodDataService {
   Map<String,Long> getMoodFrequency(Long userId);
 
   NearestMoodData getClosestHappyLocation(Long userId, double latitude, double longitude);
+
+  Boolean isValidApiKey(String userName, String apiKey);
 }

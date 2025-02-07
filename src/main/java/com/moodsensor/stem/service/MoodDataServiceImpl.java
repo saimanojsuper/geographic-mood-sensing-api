@@ -72,4 +72,10 @@ public class MoodDataServiceImpl implements MoodDataService {
     }
     return nearestMoods.isEmpty() ? null : nearestMoods.get(0);
   }
+
+  @Override
+  public Boolean isValidApiKey(String userName, String apiKey) {
+    Optional<UserData> userData = userDataRepository.findByUserName(userName);
+    return userData.isPresent() && userData.get().getApiKey().equals(apiKey);
+  }
 }
