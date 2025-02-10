@@ -1,5 +1,8 @@
 package com.moodsensor.stem.controller;
 
+import static com.moodsensor.stem.security.AuthenticationService.AUTH_TOKEN_CLIENT_NAME;
+import static com.moodsensor.stem.security.AuthenticationService.AUTH_TOKEN_HEADER_NAME;
+
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,10 +19,13 @@ import com.moodsensor.stem.model.MoodRequest;
 import com.moodsensor.stem.model.NearestMoodData;
 import com.moodsensor.stem.service.MoodDataService;
 
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import jakarta.validation.Valid;
 
 @RestController
 @RequestMapping("/api/mood/")
+@SecurityRequirement(name = AUTH_TOKEN_HEADER_NAME) // for swagger
+@SecurityRequirement(name = AUTH_TOKEN_CLIENT_NAME)
 public class MoodSensorAppController {
 
   @GetMapping(value = "hello")

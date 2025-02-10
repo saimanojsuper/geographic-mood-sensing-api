@@ -10,8 +10,8 @@ import jakarta.servlet.http.HttpServletRequest;
 
 public class AuthenticationService {
 
-  private static final String AUTH_TOKEN_HEADER_NAME = "X-API-KEY";
-  private static final String AUTH_TOKEN_CLIENT_NAME = "CLIENT_NAME";
+  public static final String AUTH_TOKEN_HEADER_NAME = "X-API-KEY";
+  public static final String AUTH_TOKEN_CLIENT_NAME = "CLIENT_NAME";
 
   public static Authentication getAuthentication(
       HttpServletRequest request,
@@ -23,7 +23,7 @@ public class AuthenticationService {
       throw new BadCredentialsException("Invalid API Key");
     }
 
-    return new ApiKeyAuthentication(apiKey, AuthorityUtils.NO_AUTHORITIES);
+    return new ApiKeyAuthentication(apiKey, AuthorityUtils.NO_AUTHORITIES, userName);
   }
 
 }
